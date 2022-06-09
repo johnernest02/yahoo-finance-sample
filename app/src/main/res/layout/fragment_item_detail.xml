@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_detail_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.host.HostActivity"
+    tools:ignore="MergeRootFrame">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_bar_height"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:toolbarId="@+id/toolbar">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/detail_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/item_detail_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/regular_market_price"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textIsSelectable="true"
+                android:textSize="36dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/regular_market_change"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment"
+                tools:text="40000.00" />
+
+            <TextView
+                android:id="@+id/regular_market_change"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textColor="@android:color/holo_red_dark"
+                android:textIsSelectable="true"
+                app:layout_constraintBaseline_toBaselineOf="@id/regular_market_price"
+                app:layout_constraintStart_toEndOf="@id/regular_market_price"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment"
+                tools:text="-36.42" />
+
+            <TextView
+                android:id="@+id/regular_market_change_percent"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textColor="@android:color/holo_red_dark"
+                android:textIsSelectable="true"
+                app:layout_constraintBaseline_toBaselineOf="@id/regular_market_change"
+                app:layout_constraintStart_toEndOf="@id/regular_market_change"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment"
+                tools:text="(80.08%)" />
+
+            <TextView
+                android:id="@+id/previous_close_label"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:text="Previous Close:"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/regular_market_price"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment" />
+
+            <TextView
+                android:id="@+id/previous_close_value"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/previous_close_label"
+                app:layout_constraintStart_toEndOf="@id/previous_close_label"
+                app:layout_constraintTop_toBottomOf="@id/regular_market_price"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment"
+                tools:text="4000" />
+
+            <TextView
+                android:id="@+id/open_label"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:text="Open:"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/previous_close_label"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment" />
+
+            <TextView
+                android:id="@+id/open_value"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/open_label"
+                app:layout_constraintStart_toEndOf="@id/open_label"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment"
+                tools:text="4000" />
+
+            <TextView
+                android:id="@+id/volume_label"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:text="Volume:"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/open_label"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment" />
+
+            <TextView
+                android:id="@+id/volume_value"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/volume_label"
+                app:layout_constraintStart_toEndOf="@id/volume_label"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment"
+                tools:text="4000" />
+
+            <TextView
+                android:id="@+id/days_range_label"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:text="Days Range:"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/volume_label"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment" />
+
+            <TextView
+                android:id="@+id/days_range_value"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/days_range_label"
+                app:layout_constraintStart_toEndOf="@id/days_range_label"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment"
+                tools:text="4000" />
+
+            <TextView
+                android:id="@+id/fiftytwo_week_range_label"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:text="52 Week Range:"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/days_range_label"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment" />
+
+            <TextView
+                android:id="@+id/fiftytwo_week_value"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/fiftytwo_week_range_label"
+                app:layout_constraintStart_toEndOf="@id/fiftytwo_week_range_label"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment"
+                tools:text="4000" />
+
+            <TextView
+                android:id="@+id/avg_volume_label"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:text="Average Volume:"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/fiftytwo_week_range_label"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment" />
+
+            <TextView
+                android:id="@+id/avg_volume_value"
+                style="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/avg_volume_label"
+                app:layout_constraintStart_toEndOf="@id/avg_volume_label"
+                tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment"
+                tools:text="4000" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
