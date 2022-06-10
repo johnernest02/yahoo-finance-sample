@@ -13,6 +13,8 @@
         android:name="com.example.yahoofinancesample.ItemListFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@id/item_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,4 +34,13 @@
         app:layout_constraintTop_toBottomOf="@id/search_view"
         tools:context="com.example.yahoofinancesample.ui.host.HostActivity"
         tools:listitem="@layout/item_list_content" />
+
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/loadingIndicator"
+        style="?android:progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/item_list"
+        app:layout_constraintTop_toTopOf="@id/item_list" />
 </androidx.constraintlayout.widget.ConstraintLayout>

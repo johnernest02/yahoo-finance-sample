@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.ViewCompat
+import androidx.core.widget.ContentLoadingProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.yahoofinancesample.R
 import com.example.yahoofinancesample.databinding.FragmentItemListBinding
 import com.example.yahoofinancesample.databinding.ItemListContentBinding
+import com.example.yahoofinancesample.service.Resource
 import com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.yahoofinancesample.service.responsemodels.Result as MarketData
@@ -34,6 +36,8 @@ class MarketDataListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private val binding get() = _binding!!
 
+    private var loadingIndicator: ContentLoadingProgressBar? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,20 +53,20 @@ class MarketDataListFragment : Fragment(), SearchView.OnQueryTextListener {
 
         val searchView: SearchView? = binding.searchView
         val recyclerView: RecyclerView = binding.itemList
-        val itemDetailFragmentContainer: View? = view.findViewById(R.id.item_detail_nav_container)
+        loadingIndicator = binding.loadingIndicator
 
-        setupViews(searchView, recyclerView, itemDetailFragmentContainer)
+        setupViews(searchView, recyclerView, loadingIndicator)
         setUpObservers()
     }
 
     private fun setupViews(
         searchView: SearchView?,
         recyclerView: RecyclerView,
-        itemDetailFragmentContainer: View?
+        loadingIndicator: ContentLoadingProgressBar?
     ) {
         searchView?.setOnQueryTextListener(this)
         adapter = MarketDataAdapter(
-            arrayListOf(), itemDetailFragmentContainer
+            arrayListOf()
         )
         recyclerView.adapter = adapter
     }
@@ -80,15 +84,27 @@ class MarketDataListFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun setUpObservers() {
-        viewModel.getMarketData().observe(viewLifecycleOwner) { data ->
-            adapter.addData(data)
-            adapter.filter.filter(currentFilter)
+        viewModel.getMarketData().observe(viewLifecycleOwner) { resource ->
+            when (resource) {
+                is Resource.Loading -> {
+                    loadingIndicator?.show()
+                }
+                is Resource.Success -> {
+                    loadingIndicator?.hide()
+                    adapter.addData(resource.data)
+                    adapter.filter.filter(currentFilter)
+                }
+                is Resource.Failure -> {
+                    loadingIndicator?.hide()
+                    Toast.makeText(requireContext(), resource.throwable.message, Toast.LENGTH_LONG).show()
+                }
+                else -> {}
+            }
         }
     }
 
     class MarketDataAdapter(
-        var marketSummaryList: ArrayList<MarketData>,
-        private val itemDetailFragmentContainer: View?
+        var marketSummaryList: ArrayList<MarketData>
     ) : RecyclerView.Adapter<MarketDataAdapter.ViewHolder>(), Filterable {
 
         var marketSummaryListFiltered: ArrayList<MarketData> = ArrayList()
@@ -115,12 +131,7 @@ class MarketDataListFragment : Fragment(), SearchView.OnQueryTextListener {
                         MarketDataDetailFragment.ARG_SYMBOL,
                         item.symbol
                     )
-                    if (itemDetailFragmentContainer != null) {
-                        itemDetailFragmentContainer.findNavController()
-                            .navigate(R.id.fragment_item_detail, bundle)
-                    } else {
-                        itemView.findNavController().navigate(R.id.show_item_detail, bundle)
-                    }
+                    itemView.findNavController().navigate(R.id.show_item_detail, bundle)
                 }
             }
         }

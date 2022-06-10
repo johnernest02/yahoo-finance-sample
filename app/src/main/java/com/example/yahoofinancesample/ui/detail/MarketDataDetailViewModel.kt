@@ -1,6 +1,7 @@
 package com.example.yahoofinancesample.ui.detail
 
 import androidx.lifecycle.*
+import com.example.yahoofinancesample.service.Resource
 import com.example.yahoofinancesample.service.YahooFinanceAPIService
 import com.example.yahoofinancesample.service.responsemodels.StockSummary
 import com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment.Companion.ARG_SYMBOL
@@ -17,23 +18,29 @@ class MarketDataDetailViewModel
 
     private val symbol = savedStateHandle.getLiveData<String>(ARG_SYMBOL)
 
-    private val stockSummary: MutableLiveData<StockSummary> by lazy {
-        MutableLiveData<StockSummary>().also {
+    private val stockSummary: MutableLiveData<Resource<StockSummary>> by lazy {
+        MutableLiveData<Resource<StockSummary>>().also {
             loadStockSummary()
         }
     }
 
-    fun getStockSummary(): LiveData<StockSummary> {
+    fun getStockSummary(): LiveData<Resource<StockSummary>> {
         return stockSummary
     }
 
     private fun loadStockSummary() {
         viewModelScope.launch(Dispatchers.IO) {
+            stockSummary.postValue(Resource.Loading())
             val result = symbol.value?.let { apiService.getStockSummary(it, "US") }
             if (result?.isSuccessful == true) {
-                stockSummary.postValue(result.body())
-                delay(8000)
+                var stockSummaryData = result.body()
+                if(stockSummaryData != null) {
+                    stockSummary.postValue(Resource.Success(stockSummaryData))
+                } else {
+                    stockSummary.postValue(Resource.Failure(Throwable("No stock summary received")))
+                }
             } else {
+                stockSummary.postValue(Resource.Failure(Throwable(result?.errorBody().toString())))
                 cancel("Oops! Something went wrong..")
             }
         }

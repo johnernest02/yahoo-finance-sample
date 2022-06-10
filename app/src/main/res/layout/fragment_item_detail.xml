@@ -92,6 +92,16 @@
                 tools:context="com.example.yahoofinancesample.ui.detail.MarketDataDetailFragment"
                 tools:text="(80.08%)" />
 
+            <androidx.core.widget.ContentLoadingProgressBar
+                android:id="@+id/loadingIndicator"
+                style="?android:progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/regular_market_price"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/regular_market_price" />
+
             <TextView
                 android:id="@+id/previous_close_label"
                 style="?android:attr/textAppearanceLarge"

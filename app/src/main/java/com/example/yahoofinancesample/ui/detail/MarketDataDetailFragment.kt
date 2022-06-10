@@ -9,8 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.widget.ContentLoadingProgressBar
 import androidx.fragment.app.viewModels
 import com.example.yahoofinancesample.databinding.FragmentItemDetailBinding
+import com.example.yahoofinancesample.service.Resource
 import com.example.yahoofinancesample.ui.list.MarketDataListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,6 +34,8 @@ class MarketDataDetailFragment : Fragment() {
 
     private val binding get() = _binding!!
 
+    private var loadingIndicator: ContentLoadingProgressBar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -44,25 +49,39 @@ class MarketDataDetailFragment : Fragment() {
         val rootView = binding.root
 
         toolbarLayout = binding.toolbarLayout
+        loadingIndicator = binding.loadingIndicator
         setupObservers()
         return rootView
     }
 
     private fun setupObservers() {
-        viewModel.getStockSummary().observe(viewLifecycleOwner) { stockSummary ->
-            toolbarLayout?.title =
-                stockSummary.quoteType.shortName + "(${stockSummary.quoteType.symbol})"
+        viewModel.getStockSummary().observe(viewLifecycleOwner) { resource ->
+            when (resource) {
+                is Resource.Loading -> {
+                    loadingIndicator?.show()
+                }
+                is Resource.Success -> {
+                    loadingIndicator?.hide()
+                    var stockSummary = resource.data
+                    toolbarLayout?.title =
+                        stockSummary.quoteType.shortName + "(${stockSummary.quoteType.symbol})"
 
-            _binding?.regularMarketPrice?.text = stockSummary.price.regularMarketPrice.fmt
-            _binding?.regularMarketChange?.text = stockSummary.price.regularMarketChange.fmt
-            _binding?.previousCloseValue?.text = stockSummary.price.regularMarketPreviousClose.fmt
-            _binding?.openValue?.text = stockSummary.price.regularMarketOpen.fmt
-            _binding?.volumeValue?.text = stockSummary.price.regularMarketVolume.fmt
-            _binding?.daysRangeValue?.text =
-                "${stockSummary.summaryDetail.dayLow.fmt} - ${stockSummary.summaryDetail.dayLow.fmt}"
-            _binding?.fiftytwoWeekValue?.text =
-                "${stockSummary.summaryDetail.fiftyTwoWeekLow.fmt} - ${stockSummary.summaryDetail.fiftyTwoWeekHigh.fmt}"
-            _binding?.avgVolumeValue?.text = "${stockSummary.summaryDetail.averageVolume.fmt}"
+                    _binding?.regularMarketPrice?.text = stockSummary.price.regularMarketPrice.fmt
+                    _binding?.regularMarketChange?.text = stockSummary.price.regularMarketChange.fmt
+                    _binding?.previousCloseValue?.text = stockSummary.price.regularMarketPreviousClose.fmt
+                    _binding?.openValue?.text = stockSummary.price.regularMarketOpen.fmt
+                    _binding?.volumeValue?.text = stockSummary.price.regularMarketVolume.fmt
+                    _binding?.daysRangeValue?.text =
+                        "${stockSummary.summaryDetail.dayLow.fmt} - ${stockSummary.summaryDetail.dayLow.fmt}"
+                    _binding?.fiftytwoWeekValue?.text =
+                        "${stockSummary.summaryDetail.fiftyTwoWeekLow.fmt} - ${stockSummary.summaryDetail.fiftyTwoWeekHigh.fmt}"
+                    _binding?.avgVolumeValue?.text = "${stockSummary.summaryDetail.averageVolume.fmt}"
+                }
+                is Resource.Failure -> {
+                    loadingIndicator?.hide()
+                    Toast.makeText(requireContext(), resource.throwable.message, Toast.LENGTH_LONG).show()
+                }
+            }
         }
     }
 
