@@ -38,7 +38,7 @@ class MarketDataListViewModel
                         marketData.postValue(Resource.Success(arrayListOf()))
                         marketData.postValue(Resource.Success(retrievedList))
                     } else {
-                        marketData.postValue(Resource.Failure(Throwable("No market summery retrieved")))
+                        marketData.postValue(Resource.Failure(Throwable("No market summary retrieved")))
                     }
                     delay(8000)
                 } else {
