@@ -14,7 +14,8 @@ import com.example.yahoofinancesample.service.responsemodels.Result as MarketDat
 @HiltViewModel
 class MarketDataListViewModel
 @Inject constructor(
-    private val apiService: YahooFinanceAPIService
+    private val apiService: YahooFinanceAPIService,
+    private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val marketData: MutableLiveData<Resource<List<MarketData>>> by lazy {
@@ -28,7 +29,7 @@ class MarketDataListViewModel
     }
 
     private fun loadMarketData() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(coroutineDispatcher) {
             while (coroutineContext.isActive) {
                 marketData.postValue(Resource.Loading())
                 val result = apiService.getMarketSummary()

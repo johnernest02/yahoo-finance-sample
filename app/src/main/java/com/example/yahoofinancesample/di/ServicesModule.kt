@@ -5,6 +5,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -40,5 +42,10 @@ internal object ServicesModule {
     @Provides
     fun provideYahooFinanceAPIService(retrofit: Retrofit): YahooFinanceAPIService {
         return retrofit.create(YahooFinanceAPIService::class.java)
+    }
+
+    @Provides
+    fun provideCoroutineDispatcher(): CoroutineDispatcher {
+        return Dispatchers.Default
     }
 }

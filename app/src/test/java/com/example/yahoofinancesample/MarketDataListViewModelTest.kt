@@ -2,14 +2,20 @@ package com.example.yahoofinancesample
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import androidx.lifecycle.map
 import com.example.yahoofinancesample.service.Resource
 import com.example.yahoofinancesample.service.YahooFinanceAPIService
 import com.example.yahoofinancesample.service.responsemodels.*
 import com.example.yahoofinancesample.ui.list.MarketDataListViewModel
+import com.example.yahoofinancesample.utils.observeForTesting
+import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -19,20 +25,26 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.capture
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.stubbing.Answer
 import retrofit2.Invocation
 import retrofit2.Response
+import kotlin.reflect.typeOf
 import com.example.yahoofinancesample.service.responsemodels.Result as MarketData
 
-@OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(MockitoJUnitRunner::class)
+@ExperimentalCoroutinesApi
 class MarketDataListViewModelTest {
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
+
+    // Sets the main coroutines dispatcher to a TestCoroutineScope for unit testing.
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
 
     private lateinit var yahooFinanceAPIService: YahooFinanceAPIService
 
@@ -87,48 +99,22 @@ class MarketDataListViewModelTest {
         )
     )
 
-    @Captor
-    private lateinit var captor: ArgumentCaptor<Resource<List<MarketData>>>
-
     @Before
     fun setUp() {
         yahooFinanceAPIService = mock()
-        marketDataListViewModel = MarketDataListViewModel(yahooFinanceAPIService)
+        marketDataListViewModel =
+            MarketDataListViewModel(yahooFinanceAPIService, mainCoroutineRule.testDispatcher)
     }
 
     @Test
-    fun `Given loadMarketData is called, When no error occurs, Then getMarketSummary should be invoked successfully`() {
-        runTest {
-            val mockLoading = Resource.Loading<List<MarketData>>()
-            doReturn(Response.success(sampleMarketSummary))
-                .`when`(yahooFinanceAPIService)
-                .getMarketSummary()
-            marketDataListViewModel.getMarketData().observeForever(marketDataObserver)
-            this.launch {
-                verify(yahooFinanceAPIService).getMarketSummary()
-                verify(marketDataObserver, times(1)).onChanged(captor.capture())
-                verify(marketDataObserver).onChanged(Resource.Success(sampleMarketSummary.marketSummaryAndSparkResponse.result))
-            }
-            marketDataListViewModel.getMarketData().removeObserver(marketDataObserver)
-        }
-    }
-
-    @Test
-    fun `Viewmodel getMarketSummary should post new responses every 8 seconds`() {
+    fun `getMarketData should return response from API Service every 8 seconds`() =
         runTest {
             doReturn(Response.success(sampleMarketSummary))
                 .`when`(yahooFinanceAPIService)
                 .getMarketSummary()
 
-            marketDataListViewModel.getMarketData().observeForever(marketDataObserver)
-            this.launch {
-                doAnswer(AdditionalAnswers.answersWithDelay<Invocation>(8000) { null })
-                    .`when`(yahooFinanceAPIService)
-                    .getMarketSummary()
-                verify(yahooFinanceAPIService).getMarketSummary()
-                verify(marketDataObserver, times(2)).onChanged(Resource.Success(sampleMarketSummary.marketSummaryAndSparkResponse.result))
+            marketDataListViewModel.getMarketData().observeForTesting {
+                verify(marketDataObserver, after(16000).times(2)).onChanged(Resource.Success(sampleMarketSummary.marketSummaryAndSparkResponse.result))
             }
-            marketDataListViewModel.getMarketData().removeObserver(marketDataObserver)
         }
-    }
 }
