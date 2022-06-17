@@ -114,7 +114,7 @@ class MarketDataListViewModelTest {
                 .getMarketSummary()
 
             marketDataListViewModel.getMarketData().observeForTesting {
-                verify(marketDataObserver, after(16000).times(2)).onChanged(Resource.Success(sampleMarketSummary.marketSummaryAndSparkResponse.result))
+                verify(marketDataObserver, after(16000).atLeast(2)).onChanged(Resource.Success(sampleMarketSummary.marketSummaryAndSparkResponse.result))
             }
         }
 }
